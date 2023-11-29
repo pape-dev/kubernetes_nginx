@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: greendeployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mywebapp
+      version: green
+  template:
+    metadata:
+      labels:
+        app: mywebapp
+        version: green
+    spec:
+      containers:
+      - name: webapp
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: nginx-green
+          mountPath: /usr/share/nginx/html
+      tolerations:
+      - key: "node-role.kubernetes.io/control-plane"
+        operator: "Exists"
+        effect: "NoSchedule"
+      volumes:
+      - name: nginx-green
+        configMap:
+          name: configmapgreen
